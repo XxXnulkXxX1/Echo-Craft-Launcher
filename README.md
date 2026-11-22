@@ -6,6 +6,14 @@
 - 开发者：XxXnulkXxX
 - 状态：非官方项目，基于 PCL2 的模块结构思路独立实现，不包含 PCL2 源码
 
+## 下载安装
+
+只需要下载这个很小的安装器（约 142 KB），运行后它会自动拉取完整程序：
+
+- https://github.com/XxXnulkXxX1/Echo-Craft-Launcher/blob/main/dist/EchoCraftSetup.exe
+
+安装器默认把程序装到 `D:\EchoCraftLauncher\Program`，游戏数据统一放在 `D:\EchoCraftLauncher`，重装不会丢存档。
+
 ## 功能
 
 - 微软正版登录（OAuth → Xbox Live → XSTS → Minecraft Services），启动前自动刷新令牌
@@ -27,7 +35,7 @@ EchoCraftLauncher-Win/       Windows 启动器（C# / WPF，net10.0-windows）
   Themes/Theme.xaml          配色与控件样式
   Assets/                    Logo 与 exe 图标
 EchoCraftLauncher-Setup/     网络安装器（C# WinForms，net48，单文件约 140 KB）
-安装说明.txt                 给最终用户看的安装说明
+dist/                        分发件：网络安装器与完整程序包
 ```
 
 ## 构建
