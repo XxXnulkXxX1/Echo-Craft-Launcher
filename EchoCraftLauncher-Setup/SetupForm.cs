@@ -20,8 +20,13 @@ namespace EchoCraftSetup;
 /// </summary>
 internal sealed class SetupForm : Form
 {
-    /// <summary>完整程序包的下载地址（上传到 CDN / 网盘后填这里）。</summary>
-    private const string PackageUrl = "https://aka.doubaocdn.com/s/9WJyiGmukC";
+    /// <summary>完整程序包的下载地址：走 jsDelivr CDN 读取本仓库 dist 目录（国内速度比 raw 好）。</summary>
+    private const string PackageUrl =
+        "https://cdn.jsdelivr.net/gh/XxXnulkXxX1/Echo-Craft-Launcher@main/dist/EchoCraftLauncher-1.0.0.zip";
+
+    /// <summary>备用地址：仓库 raw 直链，CDN 不可用时回退。</summary>
+    private const string PackageUrlBackup =
+        "https://raw.githubusercontent.com/XxXnulkXxX1/Echo-Craft-Launcher/main/dist/EchoCraftLauncher-1.0.0.zip";
 
     /// <summary>.NET 10 桌面运行时（x64）官方安装器地址。</summary>
     private const string DotNetRuntimeUrl = "https://aka.ms/dotnet/10.0/windowsdesktop-runtime-win-x64.exe";
@@ -424,7 +429,16 @@ internal sealed class SetupForm : Form
 
         var temp = Path.Combine(Path.GetTempPath(), LocalPackageName);
         _status.Text = "正在下载安装包…";
-        await DownloadFileAsync(PackageUrl, temp, "下载安装包");
+        try
+        {
+            await DownloadFileAsync(PackageUrl, temp, "下载安装包");
+        }
+        catch (Exception ex)
+        {
+            // CDN 被墙/超时就回退到仓库直链，直链也失败才向上抛
+            _status.Text = "CDN 下载失败，改用备用地址…";
+            await DownloadFileAsync(PackageUrlBackup, temp, "从备用地址下载安装包");
+        }
         return temp;
     }
 
