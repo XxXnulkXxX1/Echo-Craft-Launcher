@@ -6,3 +6,6 @@ obj/
 # 分发文件（源码仓库不放二进制包）
 EchoCraftSetup.exe
 EchoCraftLauncher-1.0.0.zip
+
+# 分发包保留在 dist 目录（安装器的下载源）
+!dist/EchoCraftLauncher-1.0.0.zip
