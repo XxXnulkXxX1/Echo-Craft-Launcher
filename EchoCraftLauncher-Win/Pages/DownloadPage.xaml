@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl x:Class="SwiftCraftLauncher2.Pages.DownloadPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             FontFamily="{StaticResource UiFont}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- 切换：游戏版本 / 模组 -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+            <RadioButton x:Name="TabVersion" Style="{StaticResource Segment}" Content="游戏版本" GroupName="DlTab"
+                         IsChecked="True" Checked="Tab_Changed" />
+            <RadioButton x:Name="TabMod" Style="{StaticResource Segment}" Content="模组" GroupName="DlTab"
+                         Margin="8,0,0,0" Checked="Tab_Changed" />
+        </StackPanel>
+
+        <!-- 版本面板 -->
+        <Grid x:Name="VersionPanel" Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Style="{StaticResource Card}" Margin="0,0,12,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0">
+                        <TextBlock Text="版本库" Foreground="{DynamicResource TextBrush}" FontSize="16" FontWeight="SemiBold" />
+                        <Button x:Name="RefreshButton" Content="刷新清单" Style="{StaticResource GhostButton}"
+                                HorizontalAlignment="Right" Click="Refresh_Click" />
+                    </Grid>
+
+                    <Grid Grid.Row="1" Margin="0,10,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBox x:Name="SearchBox" Style="{StaticResource Input}" TextChanged="Filter_Changed" />
+                        <CheckBox x:Name="ReleaseOnly" Grid.Column="1" Content="仅正式版" IsChecked="True" Margin="10,0,0,0"
+                                  Foreground="{DynamicResource SubTextBrush}" FontSize="12" VerticalAlignment="Center"
+                                  Checked="Filter_Changed" Unchecked="Filter_Changed" />
+                    </Grid>
+
+                    <ListBox x:Name="VersionList" Grid.Row="2" Style="{StaticResource PlainList}"
+                             VirtualizingPanel.IsVirtualizing="True"
+                             VirtualizingPanel.VirtualizationMode="Recycling"
+                             ScrollViewer.CanContentScroll="True"
+                             SelectionChanged="VersionList_SelectionChanged">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Id}" Foreground="{DynamicResource TextBrush}" FontSize="13" />
+                                    <TextBlock Text="{Binding TypeLabel}" Style="{StaticResource SubLabel}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
+            </Border>
+
+            <Border Grid.Column="1" Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock Text="选中的版本" Style="{StaticResource SubLabel}" />
+                    <TextBlock x:Name="DetailTitle" Text="未选择" Foreground="{DynamicResource TextBrush}"
+                               FontSize="18" FontWeight="SemiBold" Margin="0,8,0,6" TextWrapping="Wrap" />
+                    <TextBlock x:Name="VersionDetailBody" Style="{StaticResource SubLabel}" TextWrapping="Wrap" />
+                    <Button Content="安装为新实例" Style="{StaticResource PrimaryButton}" Margin="0,16,0,0"
+                            Click="Install_Click" />
+                    <TextBlock Text="原版文件会在首次启动时下载；Fabric / Quilt 会在这里写入安装档案。"
+                               Style="{StaticResource SubLabel}" TextWrapping="Wrap" Margin="0,10,0,0" />
+                    <Border Height="1" Background="{DynamicResource BorderBrush}" Margin="0,18,0,12" />
+                    <TextBlock Text="已安装版本" Style="{StaticResource SubLabel}" />
+                    <ListBox x:Name="InstalledList" Style="{StaticResource PlainList}" Height="180" Margin="0,8,0,0" />
+                    <TextBlock x:Name="StatusText" Style="{StaticResource SubLabel}" TextWrapping="Wrap" Margin="0,8,0,0" />
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!-- 模组面板 -->
+        <Grid x:Name="ModPanel" Grid.Row="1" Visibility="Collapsed">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Style="{StaticResource Card}" Margin="0,0,12,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0">
+                        <TextBlock Text="模组下载 · Modrinth" Foreground="{DynamicResource TextBrush}"
+                                   FontSize="16" FontWeight="SemiBold" />
+                        <Button Content="打开 mods 文件夹" Style="{StaticResource GhostButton}"
+                                HorizontalAlignment="Right" Click="OpenMods_Click" />
+                    </Grid>
+
+                    <Grid Grid.Row="1" Margin="0,10,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBox x:Name="ModSearchBox" Style="{StaticResource Input}" TextChanged="ModSearch_TextChanged" />
+                        <TextBlock x:Name="ModSearchHint" Text="输入关键词搜索（sodium、iris、jei…）"
+                                   Style="{StaticResource SubLabel}" Margin="12,0,0,0"
+                                   VerticalAlignment="Center" IsHitTestVisible="False" />
+                    </Grid>
+
+                    <!-- 分类：平铺胶囊标签，自动换行，紧贴搜索框下方 -->
+                    <Grid Grid.Row="2" Margin="0,0,0,4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <WrapPanel x:Name="CategoryPanel" Grid.Column="0" Orientation="Horizontal">
+                            <ToggleButton Content="全部" Tag="" IsChecked="True" Style="{StaticResource Chip}"
+                                          Click="CategoryChip_Click" />
+                            <ToggleButton Content="优化" Tag="optimization" Style="{StaticResource Chip}"
+                                          Click="CategoryChip_Click" />
+                            <ToggleButton Content="冒险" Tag="adventure" Style="{StaticResource Chip}"
+                                          Click="CategoryChip_Click" />
+                            <ToggleButton Content="魔法" Tag="magic" Style="{StaticResource Chip}"
+                                          Click="CategoryChip_Click" />
+                            <ToggleButton Content="科技" Tag="technology" Style="{StaticResource Chip}"
+                                          Click="CategoryChip_Click" />
+                            <ToggleButton Content="装饰" Tag="decoration" Style="{StaticResource Chip}"
+                                          Click="CategoryChip_Click" />
+                            <ToggleButton Content="世界生成" Tag="worldgen" Style="{StaticResource Chip}"
+                                          Click="CategoryChip_Click" />
+                            <ToggleButton Content="实用" Tag="utility" Style="{StaticResource Chip}"
+                                          Click="CategoryChip_Click" />
+                            <ToggleButton Content="装备" Tag="equipment" Style="{StaticResource Chip}"
+                                          Click="CategoryChip_Click" />
+                            <ToggleButton Content="生物" Tag="mobs" Style="{StaticResource Chip}"
+                                          Click="CategoryChip_Click" />
+                            <ToggleButton Content="存储" Tag="storage" Style="{StaticResource Chip}"
+                                          Click="CategoryChip_Click" />
+                            <ToggleButton Content="运输" Tag="transportation" Style="{StaticResource Chip}"
+                                          Click="CategoryChip_Click" />
+                            <ToggleButton Content="食物" Tag="food" Style="{StaticResource Chip}"
+                                          Click="CategoryChip_Click" />
+                            <ToggleButton Content="管理" Tag="management" Style="{StaticResource Chip}"
+                                          Click="CategoryChip_Click" />
+                            <ToggleButton Content="机制" Tag="game-mechanics" Style="{StaticResource Chip}"
+                                          Click="CategoryChip_Click" />
+                            <ToggleButton Content="小游戏" Tag="minigame" Style="{StaticResource Chip}"
+                                          Click="CategoryChip_Click" />
+                            <ToggleButton Content="前置库" Tag="library" Style="{StaticResource Chip}"
+                                          Click="CategoryChip_Click" />
+                        </WrapPanel>
+
+                        <CheckBox x:Name="CompatOnly" Grid.Column="1" Content="只显示与选中实例兼容" IsChecked="True"
+                                  Margin="8,0,0,0" Foreground="{DynamicResource SubTextBrush}" FontSize="12"
+                                  VerticalAlignment="Center" Checked="Compat_Changed" Unchecked="Compat_Changed" />
+                    </Grid>
+
+                    <Grid Grid.Row="3">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <Grid Grid.Row="0">
+                            <ListBox x:Name="ModList" Style="{StaticResource PlainList}"
+                                     VirtualizingPanel.IsVirtualizing="True"
+                                     VirtualizingPanel.VirtualizationMode="Recycling"
+                                     ScrollViewer.CanContentScroll="True"
+                                     SelectionChanged="ModList_SelectionChanged"
+                                     PreviewMouseLeftButtonUp="ModList_PreviewMouseUp">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <Border Grid.Column="0" Width="38" Height="38" CornerRadius="8"
+                                                    Background="{DynamicResource Panel2Brush}" Margin="0,0,10,0"
+                                                    VerticalAlignment="Top">
+                                                <Grid>
+                                                    <TextBlock Text="?" Foreground="{DynamicResource SubTextBrush}"
+                                                               HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                    <Image Source="{Binding Icon}" Stretch="UniformToFill" />
+                                                </Grid>
+                                            </Border>
+                                            <StackPanel Grid.Column="1">
+                                                <TextBlock Text="{Binding Title}" Foreground="{DynamicResource TextBrush}"
+                                                           FontSize="13" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                                <TextBlock Text="{Binding Description}" Style="{StaticResource SubLabel}"
+                                                           Margin="0,2,0,0" TextTrimming="CharacterEllipsis" />
+                                                <TextBlock Style="{StaticResource SubLabel}" Margin="0,2,0,0" FontSize="11">
+                                                    <Run Text="{Binding Author}" /><Run Text=" · " /><Run Text="{Binding Downloads}" /><Run Text=" 次下载" /><Run Text=" · " /><Run Text="{Binding Categories}" />
+                                                </TextBlock>
+                                            </StackPanel>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                            <TextBlock x:Name="ModEmpty" Text="正在加载模组列表…" Style="{StaticResource SubLabel}"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="13"
+                                       IsHitTestVisible="False" />
+                        </Grid>
+
+                        <Button x:Name="LoadMoreButton" Grid.Row="1" Content="加载更多模组" Style="{StaticResource GhostButton}"
+                                Margin="0,8,0,0" Click="LoadMore_Click" Visibility="Collapsed" />
+                    </Grid>
+                </Grid>
+            </Border>
+
+            <Border Grid.Column="1" Style="{StaticResource Card}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0">
+                        <TextBlock Text="模组信息" Style="{StaticResource SubLabel}" />
+                        <TextBlock x:Name="ModTitle" Text="搜索并选择一个模组" Foreground="{DynamicResource TextBrush}"
+                                   FontSize="18" FontWeight="SemiBold" Margin="0,8,0,6" TextWrapping="Wrap" />
+                        <TextBlock x:Name="ModInfo" Style="{StaticResource SubLabel}" TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="1" Margin="0,12,0,0">
+                        <TextBlock Text="安装到实例" Style="{StaticResource SubLabel}" Margin="0,0,0,4" />
+                        <ListBox x:Name="TargetList" Style="{StaticResource PlainList}" Height="96"
+                                 SelectionChanged="TargetList_SelectionChanged">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Name}" Foreground="{DynamicResource TextBrush}" FontSize="13" />
+                                        <TextBlock Text="{Binding SubTitle}" Style="{StaticResource SubLabel}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                        <TextBlock x:Name="TargetHint" Style="{StaticResource SubLabel}" TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="2">
+                        <ProgressBar x:Name="ModBar" Style="{StaticResource ThinProgress}" Margin="0,8,0,6" />
+                        <TextBlock x:Name="ModStatus" Style="{StaticResource SubLabel}" TextWrapping="Wrap" />
+                        <Button x:Name="InstallModButton" Content="安装模组及其前置" Style="{StaticResource PrimaryButton}"
+                                Margin="0,10,0,0" Click="InstallMod_Click" IsEnabled="False" />
+                        <Button Content="查看详情" Style="{StaticResource GhostButton}" Margin="0,8,0,0"
+                                Click="OpenDetail_Click" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- 应用内详情页：盖住整个模组面板，不跳浏览器 -->
+            <Grid x:Name="ModDetailPanel" Grid.ColumnSpan="2" Visibility="Collapsed"
+                  Background="{DynamicResource BgBrush}">
+                <Border Style="{StaticResource Card}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <Grid Grid.Row="0" Margin="0,0,0,10">
+                            <Button Content="← 返回列表" Style="{StaticResource GhostButton}" HorizontalAlignment="Left"
+                                    Click="BackToList_Click" />
+                            <TextBlock Text="模组详情" Foreground="{DynamicResource SubTextBrush}" FontSize="12"
+                                       HorizontalAlignment="Right" VerticalAlignment="Center" />
+                        </Grid>
+
+                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                            <StackPanel Margin="0,0,6,0">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Border Grid.Column="0" Width="84" Height="84" CornerRadius="12"
+                                            Background="{DynamicResource Panel2Brush}" Margin="0,0,14,0"
+                                            VerticalAlignment="Top">
+                                        <Grid>
+                                            <TextBlock Text="MOD" Foreground="{DynamicResource SubTextBrush}"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            <Image x:Name="DetailIcon" Stretch="UniformToFill" />
+                                        </Grid>
+                                    </Border>
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock x:Name="DetailTitleText" Foreground="{DynamicResource TextBrush}"
+                                                   FontSize="22" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                        <TextBlock x:Name="DetailDescText" Style="{StaticResource SubLabel}"
+                                                   TextWrapping="Wrap" Margin="0,5,0,0" />
+                                        <TextBlock x:Name="DetailMetaText" Style="{StaticResource SubLabel}"
+                                                   TextWrapping="Wrap" Margin="0,6,0,0" />
+                                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                                            <Border x:Name="DetailCategoryBadge" Background="{DynamicResource Panel2Brush}"
+                                                    CornerRadius="6" Padding="8,3" Margin="0,0,6,0">
+                                                <TextBlock x:Name="DetailCategoryText" Style="{StaticResource SubLabel}" FontSize="11" />
+                                            </Border>
+                                            <Button x:Name="SourceButton" Content="源码/主页" Style="{StaticResource GhostButton}"
+                                                    Height="26" FontSize="11" Click="OpenSource_Click" Margin="0,0,6,0" />
+                                            <Button x:Name="IssuesButton" Content="问题反馈" Style="{StaticResource GhostButton}"
+                                                    Height="26" FontSize="11" Click="OpenIssues_Click" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Grid>
+
+                                <TextBlock x:Name="GalleryLabel" Text="截图" Style="{StaticResource SubLabel}" Margin="0,16,0,6" />
+                                <ItemsControl x:Name="GalleryList">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Width="164" Height="92" CornerRadius="8" Margin="0,0,8,8"
+                                                    Background="{DynamicResource Panel2Brush}">
+                                                <Image Source="{Binding}" Stretch="UniformToFill" />
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+
+                                <Grid Margin="0,10,0,4">
+                                    <TextBlock Text="介绍" Style="{StaticResource SubLabel}" VerticalAlignment="Center" />
+                                    <Button x:Name="BodyToggleButton" Content="查看原文" HorizontalAlignment="Right"
+                                            Style="{StaticResource GhostButton}" Height="26" FontSize="12"
+                                            Padding="10,0" Visibility="Collapsed" Click="BodyToggle_Click" />
+                                </Grid>
+                                <FlowDocumentScrollViewer x:Name="DetailDocumentBody" IsToolBarVisible="False"
+                                                          VerticalScrollBarVisibility="Disabled"
+                                                          Background="Transparent" Padding="0"
+                                                          PreviewMouseWheel="Body_PreviewMouseWheel" />
+                            </StackPanel>
+                        </ScrollViewer>
+
+                        <Grid Grid.Row="2" Margin="0,12,0,0">
+                            <StackPanel>
+                                <Grid Margin="0,0,0,6">
+                                    <TextBlock Text="安装到实例" Style="{StaticResource SubLabel}" VerticalAlignment="Center" />
+                                    <ComboBox x:Name="DetailTargetBox" Width="230" HorizontalAlignment="Right"
+                                              DisplayMemberPath="Name" SelectionChanged="DetailTarget_Changed"
+                                              Background="{DynamicResource InputBrush}"
+                                              Foreground="{DynamicResource TextBrush}"
+                                              BorderBrush="{DynamicResource BorderBrush}" />
+                                </Grid>
+                                <ProgressBar x:Name="DetailBar" Style="{StaticResource ThinProgress}" Margin="0,0,0,6" />
+                                <TextBlock x:Name="DetailStatus" Style="{StaticResource SubLabel}" TextWrapping="Wrap" />
+                                <Button x:Name="DetailInstallButton" Content="安装到选中实例" Style="{StaticResource PrimaryButton}"
+                                        Margin="0,10,0,0" Click="InstallMod_Click" IsEnabled="False" />
+                            </StackPanel>
+                        </Grid>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>
+

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl x:Class="SwiftCraftLauncher2.Pages.MultiplayerPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             FontFamily="{StaticResource UiFont}">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Column="0" Style="{StaticResource Card}" Margin="0,0,12,0">
+            <StackPanel>
+                <TextBlock Text="局域网联机" Foreground="{DynamicResource TextBrush}" FontSize="16" FontWeight="SemiBold" />
+                <TextBlock Style="{StaticResource SubLabel}" TextWrapping="Wrap" Margin="0,10,0,0"
+                           Text="本启动器不提供联机大厅或服务器穿透，只负责把游戏正确启动起来。局域网（同一路由器 / 同一 WiFi）联机可以这样做：" />
+                <TextBlock Style="{StaticResource BodyText}" TextWrapping="Wrap" Margin="0,12,0,0" LineHeight="24">
+                    1. 房主进入游戏，按 Esc 打开菜单，点击「对局域网开放」；&#x000A;2. 记下聊天栏里显示的端口号（例如 54321）；&#x000A;3. 其他玩家在「多人游戏 → 直接连接」里输入 房主内网 IP:端口；&#x000A;4. 所有人必须使用相同的游戏版本，模组也要完全一致，否则会提示版本不兼容。
+                </TextBlock>
+                <TextBlock Style="{StaticResource SubLabel}" TextWrapping="Wrap" Margin="0,14,0,0"
+                           Text="跨公网联机需要额外的内网穿透工具或正版服务器，本启动器不内置这类功能。" />
+            </StackPanel>
+        </Border>
+
+        <Border Grid.Column="1" Style="{StaticResource Card}">
+            <StackPanel>
+                <TextBlock Text="模组与整合包" Foreground="{DynamicResource TextBrush}" FontSize="16" FontWeight="SemiBold" />
+                <TextBlock x:Name="InstanceText" Style="{StaticResource SubLabel}" Margin="0,8,0,0" TextWrapping="Wrap" />
+                <TextBlock Text="把 .jar 模组放进实例的 mods 文件夹；客户端模组需要 Fabric / Quilt 实例才能加载。"
+                           Style="{StaticResource SubLabel}" TextWrapping="Wrap" Margin="0,10,0,0" />
+                <Button Content="打开 mods 文件夹" Style="{StaticResource GhostButton}" Margin="0,14,0,0"
+                        HorizontalAlignment="Left" Click="OpenMods_Click" />
+                <Button Content="打开实例目录" Style="{StaticResource GhostButton}" Margin="0,8,0,0"
+                        HorizontalAlignment="Left" Click="OpenInstance_Click" />
+                <Button Content="打开存档文件夹" Style="{StaticResource GhostButton}" Margin="0,8,0,0"
+                        HorizontalAlignment="Left" Click="OpenSaves_Click" />
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>
+

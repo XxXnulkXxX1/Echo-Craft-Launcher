@@ -1,0 +1,8 @@
+# 构建产物
+bin/
+obj/
+*.user
+
+# 分发文件（源码仓库不放二进制包）
+EchoCraftSetup.exe
+EchoCraftLauncher-1.0.0.zip

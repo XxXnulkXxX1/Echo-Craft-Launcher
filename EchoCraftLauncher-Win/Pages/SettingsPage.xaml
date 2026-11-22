@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl x:Class="SwiftCraftLauncher2.Pages.SettingsPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             FontFamily="{StaticResource UiFont}">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource Card}" Margin="0,0,12,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock Text="Java 运行环境" Foreground="{DynamicResource TextBrush}" FontSize="16" FontWeight="SemiBold" />
+                <TextBlock Grid.Row="1" Text="启动时会自动匹配版本要求的 Java；这里可以手动指定" Style="{StaticResource SubLabel}"
+                           Margin="0,6,0,8" TextWrapping="Wrap" />
+                <ListBox x:Name="JavaList" Grid.Row="2" Style="{StaticResource PlainList}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <!-- 路径很长时省略显示，鼠标悬停看完整路径 -->
+                            <TextBlock Text="{Binding Display}" TextTrimming="CharacterEllipsis"
+                                       Foreground="{DynamicResource TextBrush}" FontSize="12"
+                                       ToolTip="{Binding Display}" />
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0,8,0,0">
+                    <Button Content="重新检测" Style="{StaticResource GhostButton}" Click="Detect_Click" />
+                    <Button Content="指定 javaw.exe" Style="{StaticResource GhostButton}" Margin="8,0,0,0"
+                            Click="Browse_Click" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <ScrollViewer Grid.Row="0" Grid.Column="1" VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled" Padding="0,0,6,0">
+        <StackPanel>
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock Text="性能与下载" Foreground="{DynamicResource TextBrush}" FontSize="16" FontWeight="SemiBold" />
+
+                    <Grid Margin="0,12,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="110" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="内存上限" Style="{StaticResource SubLabel}" VerticalAlignment="Center" />
+                        <TextBox x:Name="MemoryBox" Grid.Column="1" Style="{StaticResource Input}" />
+                    </Grid>
+                    <Grid Margin="0,8,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="110" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="下载线程" Style="{StaticResource SubLabel}" VerticalAlignment="Center" />
+                        <TextBox x:Name="ThreadsBox" Grid.Column="1" Style="{StaticResource Input}" />
+                    </Grid>
+                    <TextBlock Text="附加 JVM 参数（用空格分隔，可留空）" Style="{StaticResource SubLabel}" Margin="0,10,0,4" />
+                    <TextBox x:Name="JvmBox" Style="{StaticResource Input}" Height="52" TextWrapping="Wrap"
+                             AcceptsReturn="True" VerticalContentAlignment="Top" />
+
+                    <TextBlock Text="下载镜像" Style="{StaticResource SubLabel}" Margin="0,10,0,6" />
+                    <StackPanel Orientation="Horizontal">
+                        <RadioButton x:Name="MirrorOfficial" Content="官方源" Foreground="{DynamicResource TextBrush}"
+                                     GroupName="Mirror" />
+                        <RadioButton x:Name="MirrorBmcl" Content="BMCLAPI 镜像（国内更快）" Margin="18,0,0,0"
+                                     Foreground="{DynamicResource TextBrush}" GroupName="Mirror" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource Card}" Margin="0,12,0,0">
+                <StackPanel>
+                    <TextBlock Text="离线账号" Foreground="{DynamicResource TextBrush}" FontSize="16" FontWeight="SemiBold" />
+                    <TextBlock Text="离线用户名（仅本地使用，不连接认证服务器）" Style="{StaticResource SubLabel}" Margin="0,6,0,6" />
+                    <TextBox x:Name="PlayerBox" Style="{StaticResource Input}" />
+                    <TextBlock Text="数据目录" Style="{StaticResource SubLabel}" Margin="0,12,0,4" />
+                    <TextBlock x:Name="RootText" Style="{StaticResource BodyText}" FontSize="12" TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource Card}" Margin="0,12,0,0">
+                <StackPanel>
+                    <TextBlock Text="界面语言" Foreground="{DynamicResource TextBrush}" FontSize="16" FontWeight="SemiBold" />
+                    <TextBlock Text="更改后立即生效，所有页面会重建" Style="{StaticResource SubLabel}" Margin="0,6,0,8" />
+                    <ComboBox x:Name="LanguageBox" SelectedIndex="0" SelectionChanged="Language_Changed"
+                              Background="{DynamicResource InputBrush}" Foreground="{DynamicResource TextBrush}"
+                              BorderBrush="{DynamicResource BorderBrush}">
+                        <ComboBoxItem Content="简体中文" Tag="zh" />
+                        <ComboBoxItem Content="English" Tag="en" />
+                    </ComboBox>
+                </StackPanel>
+            </Border>
+
+            <!-- 模组介绍翻译 -->
+            <Border Style="{StaticResource Card}" Margin="0,12,0,0">
+                <StackPanel>
+                    <TextBlock Text="模组介绍" Foreground="{DynamicResource TextBrush}" FontSize="16" FontWeight="SemiBold" />
+                    <TextBlock Text="Modrinth 上的介绍多为英文，开启后会在打开详情页时自动机翻成中文（需联网）"
+                               Style="{StaticResource SubLabel}" TextWrapping="Wrap" Margin="0,6,0,10" />
+                    <CheckBox x:Name="TranslateModsBox" Content="自动把英文模组介绍翻译为中文"
+                              Foreground="{DynamicResource TextBrush}" FontSize="13"
+                              Checked="TranslateMods_Changed" Unchecked="TranslateMods_Changed" />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+        </ScrollViewer>
+
+        <Grid Grid.Row="1" Grid.ColumnSpan="2" Margin="0,12,0,0">
+            <TextBlock x:Name="StatusText" Style="{StaticResource SubLabel}" VerticalAlignment="Center" TextWrapping="Wrap" />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="打开数据目录" Style="{StaticResource GhostButton}" Click="OpenRoot_Click" />
+                <Button Content="保存设置" Style="{StaticResource PrimaryButton}" Width="110" Margin="10,0,0,0"
+                        Click="Save_Click" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>
+
